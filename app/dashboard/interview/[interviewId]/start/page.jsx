@@ -4,51 +4,61 @@ import { AIinterview } from "../../../../utils/schema";
 import { eq } from "drizzle-orm";
 import { db } from "../../../../utils/db";
 import QuestionsSection from './_components/QuestionsSection'; // Correct import path
-import RecordAnswerSection from './_components/RecordAnswerSection'
-function StartInterview({ params }) {
-  // Unwrap params using React.use()
-  const { interviewId } = React.use(params); // Use React.use() to unwrap params
-  const [interviewData, setInterviewData] = useState();
-  const [interviewQuestion, setInterviewQuestion] = useState();
-  const [loading, setLoading] = useState(true); // Add loading state
+import RecordAnswerSection from "./_components/RecordAnswerSection"
 
-  // Fetch interview details on component mount
+export default function StartInterview({ params }) {
+  const { interviewId } = React.use(params);
+  const [interviewData, setInterviewData] = useState();
+  const [interviewQuestions, setInterviewQuestions] = useState([]); // Array of questions
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0); // Track current question
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     GetInterviewDetails();
   }, []);
 
   const GetInterviewDetails = async () => {
     try {
-      // Fetch interview details for the specific userId
       const result = await db
         .select()
         .from(AIinterview)
-        .where(eq(AIinterview.userId, interviewId)); // Use interviewId
+        .where(eq(AIinterview.userId, interviewId));
 
       const jsonMockResp = JSON.parse(result[0].jsonMockResp);
       console.log("Fetched Interview Questions:", jsonMockResp);
-      setInterviewQuestion(jsonMockResp);
+      setInterviewQuestions(jsonMockResp); // Set the array of questions
       setInterviewData(result[0]);
     } catch (error) {
       console.error("Error fetching interview details:", error);
     } finally {
-      setLoading(false); // Set loading to false after fetching data
+      setLoading(false);
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Show loading state
+    return <div>Loading...</div>;
+  }
+
+  // Check if there are no questions
+  if (interviewQuestions.length === 0) {
+    return <div>No interview questions found.</div>;
+  }
+
+  // Check if all questions have been answered
+  if (currentQuestionIndex >= interviewQuestions.length) {
+    return <div>Interview completed! Thank you for your responses.</div>;
   }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
       {/* Questions */}
-      <QuestionsSection interviewQuestions={interviewQuestion} />
+      <QuestionsSection interviewQuestions={interviewQuestions} />
      
       {/* Video/Audio Recording */}
-      <RecordAnswerSection></RecordAnswerSection>
+      <RecordAnswerSection
+        interviewQuestion={interviewQuestions[currentQuestionIndex]?.question} // Pass the current question
+        onNextQuestion={() => setCurrentQuestionIndex((prev) => prev + 1)} // Function to move to the next question
+      />
     </div>
   );
 }
-
-export default StartInterview;
