@@ -25,9 +25,10 @@ export default function Interview({ params }) {
     try {
       // Fetch interview details for the specific userId
       const result = await db
-        .select()
-        .from(AIinterview)
-        .where(eq(AIinterview.userId, interviewId)); // Use interviewId
+      .select()
+      .from(AIinterview)
+      .where(eq(AIinterview.id, interviewId));
+     // Use interviewId
 
       console.log('Detailed information:', result);
 

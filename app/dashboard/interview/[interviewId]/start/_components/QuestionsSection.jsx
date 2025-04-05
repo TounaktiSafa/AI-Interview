@@ -1,3 +1,5 @@
+
+
 import React from 'react';
 import { Lightbulb } from "lucide-react";
 
@@ -77,3 +79,4 @@ function QuestionsSection({ interviewQuestions }) {
 }
 
 export default QuestionsSection;
+

@@ -44,8 +44,10 @@ function Page() {
     console.log('Job Title:', jobTitle);
     console.log('Job Description:', jobDescription);
     console.log('Experience:', experience);
-    setIsModalOpen(false);
-
+    
+    // Keep the modal open while generating the questions (no immediate close)
+    // The modal will close only after the interview data is processed and saved.
+    
     const InputPrompt = `Job Position: ${jobTitle}, Job Description: ${jobDescription}, Years of Experience: ${experience}. Generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} interview questions with answers in JSON format. Each answer should be 2 lines.`;
 
     try {
@@ -78,9 +80,12 @@ function Page() {
         const rep = await db.insert(AIinterview).values(interviewData).returning({ id: AIinterview.id });
 
         console.log('Data saved to the database:', rep);
-        if(rep){
-          setIsModalOpen(false);
-          router.push("/dashboard/interview/"+user.uid)
+        
+        // Close modal and navigate after successful save
+        if (rep && rep.length > 0) {
+          const interviewId = rep[0].id; // Extract the inserted interview ID
+          setIsModalOpen(false); 
+          router.push(`/dashboard/interview/${interviewId}`); // Redirect using interview ID
         }
 
       } catch (error) {
