@@ -1,16 +1,16 @@
-
+"use client";
 
 import React from 'react';
 import { Lightbulb } from "lucide-react";
 
-function QuestionsSection({ interviewQuestions }) {
+function QuestionsSection({ interviewQuestions, currentQuestionIndex }) {
   if (!interviewQuestions || interviewQuestions.length === 0) {
     return <div>No questions available.</div>; // Handle empty or undefined data
   }
 
   return (
     <div className="p-5 border rounded-lg">
-      <ol className="space-y-8"> {/* Removed overflow-hidden */}
+      <ol className="space-y-8">
         {interviewQuestions.map((question, index) => (
           <li
             key={index}
@@ -55,7 +55,7 @@ function QuestionsSection({ interviewQuestions }) {
                   index + 1
                 )}
               </span>
-              <div className="block">
+              <div className={`block ${index === currentQuestionIndex ? 'bg-indigo-100 p-2 rounded-lg' : ''}`}>
                 <h4 className="text-lg text-indigo-600">Question {index + 1}</h4>
                 <span className="text-sm">
                   {typeof question === "object" ? question.question : question}
@@ -65,18 +65,18 @@ function QuestionsSection({ interviewQuestions }) {
           </li>
         ))}
       </ol>
-      
-      <div className="border rounded-lg p-5 bg-indigo-100 mt-20  ">
-     <h2 className='flex gap-2 items-cneter text-primary'>
-     <Lightbulb></Lightbulb>
- <strong className='text-indigo-900'>Note :</strong>
- </h2>
- <h2 className='text-sm text-primary my-2'>Click on Record Answer the question . At the end of interview we will give you the feedback along with correct ansewer for each of question and your answer to compare it.</h2>
-     </div>
+
+      <div className="border rounded-lg p-5 bg-indigo-100 mt-20">
+        <h2 className="flex gap-2 items-center text-primary">
+          <Lightbulb />
+          <strong className="text-indigo-900">Note :</strong>
+        </h2>
+        <h2 className="text-sm text-primary my-2">
+          Click on Record Answer the question. At the end of the interview, we will give you the feedback along with the correct answer for each question and your answer to compare it.
+        </h2>
+      </div>
     </div>
-    
   );
 }
 
 export default QuestionsSection;
-
