@@ -9,7 +9,7 @@ import { AIinterview } from '../utils/schema';
 import { LoaderCircle } from 'lucide-react';
 import moment from 'moment';
 
-const { getGeminiResponse } = require('./GeminiAIModel');
+const { getGeminiResponse } = require('../utils/GeminiAIModel');
 
 function Page() {
   const [isModalOpen, setIsModalOpen] = useState(false);

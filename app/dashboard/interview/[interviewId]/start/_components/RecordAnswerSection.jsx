@@ -1,4 +1,3 @@
-"use client";
 import React, { useState, useEffect } from "react";
 import Webcam from "react-webcam";
 import { Mic } from "lucide-react";
@@ -76,18 +75,25 @@ export default function RecordAnswerSection({ interviewQuestion, onNextQuestion 
         }
 
         try {
-          const feedbackPrompt = `Question: ${interviewQuestion}\nUser Answer: ${userAnswer}\n\nPlease analyze the response and provide a rating from 1 to 5 along with constructive feedback in JSON format with \"rating\" and \"feedback\" fields.`;
-          
+          const feedbackPrompt = `Question: ${interviewQuestion}\nUser Answer: ${userAnswer}\n\nPlease analyze the response and provide a rating from 1 to 5 along with constructive feedback in JSON format with "rating", "feedback", and "suggestedAnswer" fields.`;          
           const response = await getGeminiResponse(feedbackPrompt);
           const jsonResponse = JSON.parse(response.replace(/```json|```/g, '').trim());
 
-          const ratingData = {
-            rating: jsonResponse.rating,
-            feedback: jsonResponse.feedback,
-          };
+const ratingData = {
+  question: interviewQuestion,
+  answer: userAnswer,
+  rating: jsonResponse.rating,
+  feedback: jsonResponse.feedback,
+  suggestedAnswer: jsonResponse.suggestedAnswer, // Ensure this is stored
+};
 
           console.log("AI Feedback:", ratingData);
 
+          // Save the data to sessionStorage
+          const storedResults = JSON.parse(sessionStorage.getItem("interviewResults") || "[]");
+          sessionStorage.setItem("interviewResults", JSON.stringify([...storedResults, ratingData]));
+
+          // Move to the next question
           onNextQuestion(ratingData);
         } catch (error) {
           console.error("Error getting rating from Gemini:", error);
